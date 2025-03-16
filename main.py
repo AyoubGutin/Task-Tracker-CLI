@@ -76,7 +76,7 @@ def update_tasks(task_id, description):
         if task["id"] == int(task_id):
             task["description"] = description
             task[updated_at] = str(updated_at)
-            save_tasks(tasks) # update list 
+           # save_tasks(tasks) # update list 
             return      
     print(f"Task not found (ID: {task_id})")
 
@@ -91,22 +91,40 @@ def delete_tasks(task_id):
 
 # Handle commands from user
 def main():
+
+    # create an ArgumentParser object to define and parse command line arguments
     parser = argparse.ArgumentParser(description="Task Tracker CLI")
 
-    # Create subcommands
+    # Create collection of subcommands to the parser object
+        # dest="command" specifies name of chosen subcommand 
+        # help provides a help message for subcommand section
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Add Command
     add_parser = subparsers.add_parser("add", help="Add a new task")
-    add_parser.add_argument("description", nargs="+", help="Task description")
+    add_parser.add_argument("description", nargs="+", help="Task description") # one or more arguments
+
+    # Update Command
+    update_parser = subparsers.add_parser("update", help="Update a task")
+    update_parser.add_argument("task_id", type=int, nargs=1, help="ID of task to update") # one argument
+    update_parser.add_argument("description", nargs="+", help="New task description") # one or more arguments
+
     # Add the rest after testing 
 
     # Parse arguments
     args = parser.parse_args()
 
+    
+    # Conditional statements to select right function
     if args.command == "add":
         description = " ".join(args.description)
         add_tasks(description)
+    
+    elif args.command == "update":
+        task_id = int(args.task_id[0])
+        description = " ".join(args.description)
+        update_tasks(task_id, description)
+
     else:
         parser.print_help()
     
