@@ -13,10 +13,15 @@ def load_tasks():
     """
     if os.path.exists(task_path):
         with open(task_path, "r") as file:
-            return json.load(file)
+            content = file.read()
+            if not content.strip(): # If it is empty
+                return []
+            return json.loads(content)
     else:
         with open(task_path, "x") as file:
-            return file
+            print("Made new file \n".)
+            content = file.read()
+            return json.loads(content)
         
 def save_tasks(tasks):
     """
@@ -27,7 +32,7 @@ def save_tasks(tasks):
         Overwrites JSON file with updated data, it is called everytime an action is made.
     """
     with open(task_path, "w") as file:
-        json.dumps(tasks, file, indent=4)
+        json.dump(tasks, file, indent=4)
 
 
 def add_tasks(description):
@@ -48,8 +53,8 @@ def add_tasks(description):
         {"id": task_id,
          "description": description,
          "status": "todo",
-         "createdAt": created_at,
-         "updatedAt": created_at
+         "createdAt": str(created_at),
+         "updatedAt": str(created_at)
         }
     )
     save_tasks(tasks)
@@ -70,7 +75,7 @@ def update_tasks(task_id, description):
     for task in tasks:
         if task["id"] == int(task_id):
             task["description"] = description
-            task[updated_at] = updated_at
+            task[updated_at] = str(updated_at)
             save_tasks(tasks) # update list 
             return      
     print(f"Task not found (ID: {task_id})")
