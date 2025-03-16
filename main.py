@@ -1,4 +1,4 @@
-import sys
+import argparse
 import json
 import os
 from datetime import datetime
@@ -18,10 +18,10 @@ def load_tasks():
                 return []
             return json.loads(content)
     else:
-        with open(task_path, "x") as file:
-            print("Made new file \n".)
-            content = file.read()
-            return json.loads(content)
+        with open(task_path, "w") as file:
+            print("Made new file \n")
+            json.dump([], file)
+            return []
         
 def save_tasks(tasks):
     """
@@ -91,28 +91,28 @@ def delete_tasks(task_id):
 
 # Handle commands from user
 def main():
-    # Get cli args
-    args = sys.argv[1:]
+    parser = argparse.ArgumentParser(description="Task Tracker CLI")
 
-    # if input is empty
-    if not args:
-        print("No command provided.")
-        return
-    
-    command = args[0]
+    # Create subcommands
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    if command == "add" and len(args) >= 2:
-        description = " ".join(args[1:]) # Join remaining arguments as description
+    # Add Command
+    add_parser = subparsers.add_parser("add", help="Add a new task")
+    add_parser.add_argument("description", nargs="+", help="Task description")
+    # Add the rest after testing 
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    if args.command == "add":
+        description = " ".join(args.description)
         add_tasks(description)
+    else:
+        parser.print_help()
     
-    elif command == "update" and len(args) >= 3:
-        task_id = args[1]
-        new_description = " ".join(args[2:])
-        update_tasks(task_id, new_description)
-    
-    elif command == "delete" and len(args) == 2:
-        task_id = args[1]
-        delete_tasks(task_id)
+
+
+
         
 
 if __name__ == "__main__":
